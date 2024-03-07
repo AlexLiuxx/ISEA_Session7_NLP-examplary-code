@@ -1,0 +1,176 @@
+---
+title: "topic_model"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r import package}
+library(tidyverse)
+library(readtext)
+library(stringr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(stm)
+library(wordcloud)
+library(stmBrowser)
+library(plyr)
+library(quanteda)
+library(tidytext)
+```
+
+```{r import data, echo=FALSE, message=FALSE, warning=FALSE}
+setwd(" ") #change to your working folder
+
+df_sep <- read_csv("output_dfs/df_sep_sentences_v03.csv") %>% # change to your dataset
+  mutate(area = ifelse(Geography == "State", "State", "Local")) %>%
+  mutate(roles2 = ifelse(Roles %in% c("State administrators/legislators/board", 
+                                      "Local administrators/board members"), 
+                         "Administrators", "Others"))
+
+```
+
+
+```{r preprocess, echo=FALSE}
+processed <- textProcessor(df_sep$spoken_words, metadata = df_sep,
+                           removestopwords = TRUE,
+                           removenumbers = F, 
+                           stem = T) 
+
+```
+```{r DTM, echo=FALS}
+
+out <- prepDocuments(processed$documents, processed$vocab, processed$meta, 
+                     lower.thresh = 10, upper.thresh = 900)
+docs <- out$documents
+vocab <- out$vocab
+meta <- out$meta
+
+```
+
+
+```{r select topic number-step 1, echo=FALSE, message=FALSE, warning=FALSE}
+#fit stm
+set.seed(314159)
+
+#select k
+system.time(
+  storage <- searchK(out$documents, out$vocab, K = c(15, 20, 25, 30, 35, 40), # change number of topics
+                     data = meta, init.type = "Spectral")
+)
+plot.searchK<-function(x, ...){
+  oldpar <- par(no.readonly=TRUE)
+  g <- x$results
+  par(mfrow=c(2,2),mar=c(4,4,4,4),oma=c(2,2,2,2))
+  
+  plot(g$K,g$exclus,type="p", main="Exclusivity", xlab="Number of Topics (K)", ylab="Exclusivity")
+  lines(g$K,g$exclus,lty=1,col=1 ) 
+  
+  plot(g$K,g$residual,type="p", main="Residuals", xlab="Number of Topics (K)", ylab="Residuals")
+  lines(g$K,g$residual,lty=1,col=1 )
+  
+  if(!is.null(g$semcoh)){
+    plot(g$K,g$semcoh,type="p", main="Semantic Coherence", xlab="Number of Topics (K)", ylab="Semantic Coherence")
+    lines(g$K,g$semcoh,lty=1,col=1 ) 
+  }
+  
+  plot(g$K,g$lbound,type="p", main="Lower Bound", xlab="Number of Topics (K)", ylab="Lower Bound")
+  lines(g$K,g$lbound,lty=1,col=1 ) 
+  
+  title("Diagnostic Values by Number of Topics", outer=TRUE)  
+  par(oldpar)
+}
+p10_50 <- plot.searchK(storage)
+```
+
+
+```{r select topic number-step 2, echo=FALSE}
+#select 25, 30, 35
+model25Prrateby<-stm(documents=out$documents, vocab=out$vocab, 
+                     K=25, data=out$meta, init.type = "Spectral", verbose=FALSE)
+model30Prrateby<-stm(documents=out$documents, vocab=out$vocab, 
+                     K=30, data=out$meta, init.type = "Spectral", verbose=FALSE)
+model35Prrateby<-stm(documents=out$documents, vocab=out$vocab, 
+                     K=35, data=out$meta, init.type = "Spectral", verbose=FALSE)
+
+M25ExSem<-as.data.frame(cbind(c(1:25),exclusivity(model25Prrateby), 
+                              semanticCoherence(model=model25Prrateby, docs), "Mod25"))
+M30ExSem<-as.data.frame(cbind(c(1:30),exclusivity(model30Prrateby), 
+                              semanticCoherence(model=model30Prrateby, docs), "Mod30"))
+M35ExSem<-as.data.frame(cbind(c(1:35),exclusivity(model35Prrateby), 
+                              semanticCoherence(model=model35Prrateby, docs), "Mod35"))
+
+
+ModsExSem2<-rbind(M25ExSem, M30ExSem, M35ExSem)
+colnames(ModsExSem2)<-c("K","Exclusivity", "SemanticCoherence", "Model")
+
+ModsExSem2$Exclusivity<-as.numeric(as.character(ModsExSem2$Exclusivity))
+ModsExSem2$SemanticCoherence<-as.numeric(as.character(ModsExSem2$SemanticCoherence))
+
+plotexcoer2<-ggplot(ModsExSem2, aes(SemanticCoherence, Exclusivity, color = Model))+
+  geom_point(aes(shape=Model, color=Model), size = 3, alpha = 0.7) + 
+  scale_shape_manual(values=c(16, 15, 17), 
+                     labels=c("Model 25", "Model 30", "Model 35"))+
+  scale_color_manual(values=c('#228B57', '#F44336', '#FFCF48'),
+                     labels=c("Model 25", "Model 30", "Model 35"))+
+  labs(x = "Semantic Coherence",
+       y = "Exclusivity") +
+  theme_light()
+
+plotexcoer2
+
+```
+
+Select the number of topics that exhibit higher exclusivity and semantic coherence. If there is no clear best choice, manual examination is needed.
+
+```{r print topic words for selected topics, echo=FALSE, message=FALSE, warning=FALSE}
+#select 30
+
+#uses a spectral decomposition (non-negative matrix factorization) of the word co-occurrence matrix
+# K is the number topics
+PrevFit30 <- stm(documents = out$documents, vocab = out$vocab,
+                 K = 30,
+                 data = out$meta,
+                 init.type = "Spectral")
+output <- data.frame(PrevFit30$theta)
+output$doc <- meta$spoken_words
+output$interviewee <- meta$interviewee
+output$geography <- meta$Geography
+output$roles <- meta$Roles
+
+summary(PrevFit30)
+```
+
+
+```{r visualization, message=FALSE, warning=FALSE}
+# Topic visualization
+# Highest prob words
+plot(PrevFit30, type="summary", main="Topic", n=15)
+
+# Convergence
+plot(PrevFit30$convergence$bound, type = "l", 
+     ylab = "Approximate Objective",
+     main = "Convergence")
+
+# Topic correlation
+mod.out.corr <- topicCorr(PrevFit30)
+plot.topicCorr(mod.out.corr, vertex.label.cex=0.5)
+
+# Word could
+cloud(PrevFit30, topic=27)
+
+```
+
+
+```{r stmBrowser, message=FALSE, warning=FALSE}
+#stmBrowser
+stmBrowser(PrevFit30, 
+           data=meta, 
+           "Roles", # you can add one covariate
+           text="spoken_words", # text column name             
+           n=1309) # select number of rows you want to inspect
+```
+
