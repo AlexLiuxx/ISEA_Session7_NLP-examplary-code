@@ -1,4 +1,4 @@
-# ISEA_Session7_examplary-code-NLP
+# ISEA_Session7_NLP
 Code for topic model: ISEA_topic_model.Rmd
 
 Code for LDA: 
