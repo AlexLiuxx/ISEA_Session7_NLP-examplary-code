@@ -5,7 +5,7 @@ Code for LDA:
 
 Code for LLM: ISEA_topic_label_using_openai.ipynb
 
-Data used in the in-class demo is not avaialable to share publicly. You can apply the code to your only data.
+The data used in the in-class demonstration is not available for public distribution. However, you are encouraged to apply the demonstrated code to your own dataset.
 
 # Assignment
 **Conduct a comprehensive thematic analysic on COVID-related research article titles using topic modeling and LLM.**
