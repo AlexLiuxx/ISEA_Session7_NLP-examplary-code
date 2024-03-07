@@ -19,7 +19,7 @@ The data used in the in-class demonstration is not available for public distribu
 1. Annotated Coding Script for topic modeling: Submit a detailed, annotated script of your coding process. You can choose to use programming languages and libraries such as R or Python, and tools like Tidy, STM, Gensim etc. Ensure that your annotations clearly explain each step of the process.
 2. Prompt designs for LLM: Submit prompts that you used for the LLM (e.g., open-api, ChatGPT, etc.).
 
-3. Excel Spreadsheet of Topics: Prepare an Excel spreadsheet presenting your final topics. The format should be as follows:
+3. Excel Spreadsheet of Topics: Prepare spreadsheets presenting your final topics. The format should be as follows:
 
 Codebook:
    | Topic | Your Label for Topic | Top 10 Topic Terms | Top Document Example 1 | Top Document Example 2 | 
