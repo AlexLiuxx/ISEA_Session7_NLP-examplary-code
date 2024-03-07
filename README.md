@@ -1,7 +1,10 @@
 # ISEA_Session7_examplary-code-NLP
 Code for topic model: ISEA_topic_model.Rmd
+
 Code for LDA: 
+
 Code for LLM: ISEA_topic_label_using_openai.ipynb
+
 Data used in the in-class demo is not avaialable to share publicly. You can apply the code to your only data.
 
 # Assignment
