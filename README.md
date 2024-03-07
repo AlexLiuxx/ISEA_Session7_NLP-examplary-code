@@ -15,7 +15,7 @@ The data used in the in-class demonstration is not available for public distribu
 
 **Research Question:** Identify the prevailing topics in COVID-related research articles.
 
-**Assignment Deliverables:**
+**Output:**
 1. Annotated Coding Script for topic modeling: Submit a detailed, annotated script of your coding process. You can choose to use programming languages and libraries such as R or Python, and tools like Tidy, STM, Gensim etc. Ensure that your annotations clearly explain each step of the process.
 2. Prompt designs for LLM: Submit prompts that you used for the LLM (e.g., open-api, ChatGPT, etc.).
 
