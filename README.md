@@ -9,7 +9,7 @@ The data used in the in-class demonstration is not available for public distribu
 
 # Assignment
 **Conduct a comprehensive thematic analysic on COVID-related research article titles using topic modeling and LLM.**
-**Data Provided:** You are given a dataset comprising 50,000 titles from COVID-related research articles. To facilitate a more efficient analysis, you are recommended to use a random sample for your study. The suggested sample size is as follows:
+**Data Provided:** You are given a dataset comprising 5,000 titles from COVID-related research articles. To facilitate a more efficient analysis, you are recommended to use a random sample for your study. The suggested sample size is as follows:
 * For Topic Modeling: Consider using a subset of less than 5,000 titles.
 * For Large Language Model (LLM) Analysis: The subset size of titles for analysis may vary depending on the version of ChatGPT or a similar LLM you are utilizing. A smaller subset from the topic modeling results might be necessary.
 
