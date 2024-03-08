@@ -7,7 +7,7 @@ Code for LLM: ISEA_topic_label_using_openai.ipynb
 
 The data used in the in-class demonstration is not available for public distribution. However, you are encouraged to apply the demonstrated code to your own dataset.
 
-# Practice
+# Assignment
 **Conduct a comprehensive thematic analysic on COVID-related research article titles using topic modeling and LLM.**
 **Data Provided:** You are given a dataset comprising 50,000 titles from COVID-related research articles. To facilitate a more efficient analysis, you are recommended to use a random sample for your study. The suggested sample size is as follows:
 * For Topic Modeling: Consider using a subset of less than 5,000 titles.
